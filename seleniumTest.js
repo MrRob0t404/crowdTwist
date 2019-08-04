@@ -11,7 +11,6 @@ describe('CrowdTwist Test', function () {
         driver = await new Builder().forBrowser('chrome').build();
     });
 
-    // Next, we will write steps for our test. 
     // For the element ID, you can find it by open the browser inspect feature.
     it('CrowdTwist Test', async function () {
         // Load the page
@@ -19,15 +18,17 @@ describe('CrowdTwist Test', function () {
         // Find the search box by id
         await driver.findElement(By.className('is_required validate account_input form-control')).click();
         // Enter keywords and click enter
-        await driver.findElement(By.className('is_required validate account_input form-control')).sendKeys('simon2@example.com', Key.RETURN);
+        // Modify email if user is already registered to the site
+        await driver.findElement(By.className('is_required validate account_input form-control')).sendKeys('simon4@example.com', Key.RETURN);
         await driver.findElement(By.id('SubmitCreate')).click();
 
+        // Create implicit wait since website has laoding animation 
         await driver.manage().setTimeouts({
             implicit: TIMEOUT, pageLoad:
                 TIMEOUT, script: TIMEOUT
         })
-        console.info(await driver.manage().getTimeouts())
 
+        // Stale element handling 
         let staleElement = false;
         while (!staleElement) {
             try {
@@ -41,7 +42,7 @@ describe('CrowdTwist Test', function () {
             }
         }
 
-        // //Write docs for this 
+        // Send and fill out required information to complete registration 
         driver.findElement(By.id('customer_firstname')).click();
         driver.findElement(By.id('customer_firstname')).sendKeys('simon');
 
@@ -68,12 +69,13 @@ describe('CrowdTwist Test', function () {
 
         driver.findElement(By.id('submitAccount')).click();
 
+        // Implicit wait so account page can load 
         await driver.manage().setTimeouts({
             implicit: TIMEOUT, pageLoad:
                 TIMEOUT, script: TIMEOUT
         })
 
-        // We will get the title value and test it
+        // Assert we are on the correct page for when registration is complete 
         let title = await driver.getTitle();
         assert.equal(title, 'My account - My Store');
     });
