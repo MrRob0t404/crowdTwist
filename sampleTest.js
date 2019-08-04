@@ -3,6 +3,7 @@ require('chromedriver');
 
 const assert = require('assert');
 const { Builder, Key, By, until } = require('selenium-webdriver');
+const TIMEOUT = 10000
 
 describe('CrowdTwist Test', function () {
     let driver;
@@ -18,48 +19,64 @@ describe('CrowdTwist Test', function () {
         // Find the search box by id
         await driver.findElement(By.className('is_required validate account_input form-control')).click();
         // Enter keywords and click enter
-        await driver.findElement(By.className('is_required validate account_input form-control')).sendKeys('simon@example.com', Key.RETURN);
+        await driver.findElement(By.className('is_required validate account_input form-control')).sendKeys('simon2@example.com', Key.RETURN);
         await driver.findElement(By.id('SubmitCreate')).click();
 
-        driver.wait(function () {
-            return driver.isElementPresent(driver.findElement(By.id("id_gender1"))).then(el => {
-                return el.click();
-            }, 5000);
+        await driver.manage().setTimeouts({
+            implicit: TIMEOUT, pageLoad:
+                TIMEOUT, script: TIMEOUT
         })
+        console.info(await driver.manage().getTimeouts())
 
-        // driver.wait(function () {
-        //     return driver.isElementPresent(driver.findElement(By.id("customer_firstname"))).then(el => {
-        //         return el.sendKeys('simon', Key.RETURN);
-        //     }, 5000);
-        // })
+        let staleElement = false;
+        while (!staleElement) {
+            try {
+                driver.FindElement(By.id('customer_firstname')).Click();
+                staleElement = false;
 
-        // //Click on gender 
-        // await driver.findElement(By.id('id_gender1')).click();
+            } catch (e) {
+                staleElement = true;
+                // return e
+                console.log(true)
+            }
+        }
 
         // //Write docs for this 
-        // await driver.findElement(By.id('customer_firstname')).click();
-        // await driver.findElement(By.id('customer_firstname')).sendKeys('simon', Key.RETURN);
+        driver.findElement(By.id('customer_firstname')).click();
+        driver.findElement(By.id('customer_firstname')).sendKeys('simon');
 
-        // await driver.findElement(By.id('customer_lastname')).click();
-        // await driver.findElement(By.id('customer_lastname')).sendKeys('gaviria', Key.RETURN);
+        driver.findElement(By.id('customer_lastname')).click();
+        driver.findElement(By.id('customer_lastname')).sendKeys('gaviria');
 
-        // await driver.findElement(By.id('email')).click();
-        // await driver.findElement(By.id('email')).sendKeys('simon@example.com', Key.RETURN);
+        driver.findElement(By.id('passwd')).click();
+        driver.findElement(By.id('passwd')).sendKeys('1234567890');
 
-        // await driver.findElement(By.id('passwd')).click();
-        // await driver.findElement(By.id('passwd')).sendKeys('12345678', Key.RETURN);
+        driver.findElement(By.id('address1')).click();
+        driver.findElement(By.id('address1')).sendKeys('123 W 70th');
 
+        driver.findElement(By.id('city')).click();
+        driver.findElement(By.id('city')).sendKeys('New York');
 
+        driver.findElement(By.id('id_state')).click();
+        driver.findElement(By.id('id_state')).sendKeys('New York')
 
+        driver.findElement(By.id('postcode')).click();
+        driver.findElement(By.id('postcode')).sendKeys('10001');
 
+        driver.findElement(By.id('phone_mobile')).click();
+        driver.findElement(By.id('phone_mobile')).sendKeys('1234567890');
 
+        driver.findElement(By.id('submitAccount')).click();
 
-        // Wait for the results box by class
-        await driver.wait(until.elementLocated(By.id('id_gender1')), 10000);
+        await driver.manage().setTimeouts({
+            implicit: TIMEOUT, pageLoad:
+                TIMEOUT, script: TIMEOUT
+        })
+
         // We will get the title value and test it
         let title = await driver.getTitle();
-        assert.equal(title, 'Login - My Store');
+        assert.equal(title, 'My account - My Store');
     });
     // close the browser after running tests
-    after(() => driver && driver.quit());
+    // after(() => driver && driver.quit());
 })
